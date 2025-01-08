@@ -22,7 +22,7 @@ const buildConfig = async () => {
 
   await esbuild.build({
     entryPoints: [join(sourcePath, "viweb.config.ts")],
-    platform: "node",
+    platform: "browser",
     format: "cjs",
     bundle: true,
     outfile: join(distPath, "config.js"),
