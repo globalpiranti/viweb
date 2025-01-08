@@ -26,6 +26,7 @@ server.get("*", async (c) => {
     return c.body(
       await handler({
         params,
+        url: c.req.url,
         render: edge,
         header: c.req.header,
         setHeader: c.header,

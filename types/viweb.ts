@@ -14,6 +14,7 @@ export type Route = {
 export type Handler = (ctx: Context) => Promise<string> | string;
 
 export type Context = {
+  url: string;
   params: Record<string, string>;
   header: (key: RequestHeader) => string | undefined;
   setHeader: (key: string, value: string) => void;
