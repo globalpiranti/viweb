@@ -12,7 +12,13 @@
   },
   "dependencies": {
     "edge.js": "^6.2.0",
+    "fast-glob": "^3.3.3",
     "hono": "^4.6.16",
+    "ora": "^8.1.1",
     "path-to-regexp": "^8.2.0"
+  },
+  "scripts": {
+    "dev": "bun run index.ts",
+    "build": "bun run build.ts"
   }
 }
