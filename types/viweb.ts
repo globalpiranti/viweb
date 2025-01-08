@@ -2,6 +2,7 @@ import type { RequestHeader } from "hono/utils/headers";
 
 export type ViwebConfig = {
   routes: Route[];
+  globals?: { name: string; value: any }[];
 };
 
 export type Route = {
