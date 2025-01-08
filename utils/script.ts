@@ -1,8 +1,22 @@
 import * as esbuild from "esbuild";
 
+const findFile = async (path: string) => {
+  const tsFile = path.replace(/\.js$/, ".ts");
+  const tsxFile = path.replace(/\.js$/, ".tsx");
+  if (await Bun.file(tsFile).exists()) {
+    return tsFile;
+  }
+
+  if (await Bun.file(tsxFile).exists()) {
+    return tsxFile;
+  }
+
+  return null;
+};
+
 export default async function script(path: string) {
-  const file = Bun.file(path);
-  if (!(await file.exists())) return null;
+  const file = await findFile(path);
+  if (!file) return null;
 
   return esbuild
     .build({
