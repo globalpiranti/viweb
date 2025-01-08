@@ -1,4 +1,5 @@
 import type { RequestHeader } from "hono/utils/headers";
+import type { StatusCode } from "hono/utils/http-status";
 
 export type ViwebConfig = {
   routes: Route[];
@@ -14,6 +15,7 @@ export type Route = {
 export type Handler = (ctx: Context) => Promise<string> | string;
 
 export type Context = {
+  status: (status: StatusCode) => void;
   url: string;
   params: Record<string, string>;
   header: (key: RequestHeader) => string | undefined;

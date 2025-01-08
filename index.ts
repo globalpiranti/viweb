@@ -25,6 +25,7 @@ server.get("*", async (c) => {
     c.header("Content-Type", "text/html");
     return c.body(
       await handler({
+        status: c.status,
         params,
         url: c.req.url,
         render: edge,
