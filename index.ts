@@ -3,6 +3,7 @@ import router from "./utils/router";
 import viwebConfig from "./viweb.config";
 import edge from "./utils/edge";
 import script from "./utils/script";
+import { serveStatic } from "hono/bun";
 
 const server = new Hono();
 
@@ -14,6 +15,8 @@ server.use("/scripts/*", async (c, next) => {
   c.header("Content-Type", "text/javascript");
   return c.body(code);
 });
+
+server.use("*", serveStatic({ root: "./public" }));
 
 server.get("*", async (c) => {
   const { handler, params = {} } = router(c.req.path, viwebConfig.routes) || {};
