@@ -1,11 +1,14 @@
 import { Hono } from "hono";
-import router from "./utils/router";
-import viwebConfig from "./viweb.config";
-import edge from "./utils/edge";
-import script from "./utils/script";
 import { serveStatic } from "hono/bun";
+import edge from "./utils/edge";
+import router from "./utils/router";
+import script from "./utils/script";
+import ws from "./utils/ws";
+import viwebConfig from "./viweb.config";
+import watchEdge from "./utils/watch";
 
 const server = new Hono();
+const { app, websocket } = ws;
 
 server.use("/scripts/*", async (c, next) => {
   const code = await script("./src" + c.req.path);
@@ -16,29 +19,50 @@ server.use("/scripts/*", async (c, next) => {
   return c.body(code);
 });
 
+server.route("/ws", app);
+
+server.get("/@hmr", async (c) => {
+  const code = await script("./utils/hmr.js");
+
+  c.header("Content-Type", "text/javascript");
+  return c.body(code || "");
+});
+
 server.use("*", serveStatic({ root: "./public" }));
 
 server.get("*", async (c) => {
   const { handler, params = {} } = router(c.req.path, viwebConfig.routes) || {};
 
   if (handler) {
-    c.header("Content-Type", "text/html");
-    return c.body(
-      await handler({
-        status: c.status,
-        params,
-        url: c.req.url,
-        render: edge,
-        header: c.req.header,
-        setHeader: c.header,
-      }),
-    );
+    const body = await handler({
+      status: c.status,
+      params,
+      url: c.req.url,
+      render: async (...params) => {
+        const scriptTag = `<script src="/@hmr" defer></script>`;
+        c.header("Content-Type", "text/html");
+        return (await edge(...params)).replace(
+          /<head>([\s\S]*?)<\/head>/,
+          (_match, content) => {
+            return `<head>\n${scriptTag}\n${content}</head>`;
+          },
+        );
+      },
+      header: c.req.header,
+      setHeader: c.header,
+    });
+
+    return c.body(body);
   }
 
   return c.json({ error: "Not found" }, 404);
 });
 
+watchEdge();
+ws.reload();
+
 export default {
   port: 3000,
   fetch: server.fetch,
+  websocket,
 };
