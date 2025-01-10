@@ -18,7 +18,7 @@
     "path-to-regexp": "^8.2.0"
   },
   "scripts": {
-    "dev": "bun run index.ts",
+    "dev": "bun --hot run index.ts",
     "build": "bun run build.ts"
   }
 }
