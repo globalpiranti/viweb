@@ -26,6 +26,7 @@ const buildConfig = async () => {
     format: "cjs",
     bundle: true,
     outfile: join(distPath, "config.js"),
+    external: ["axios", "moment"],
   });
 
   loader.succeed("Bundle config done");

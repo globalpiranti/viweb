@@ -1,11 +1,13 @@
 import { Hono } from "hono";
 import { serveStatic } from "hono/bun";
+import moment from "moment";
+import client from "./utils/client";
 import edge from "./utils/edge";
 import router from "./utils/router";
 import script from "./utils/script";
+import watchEdge from "./utils/watch";
 import ws from "./utils/ws";
 import viwebConfig from "./viweb.config";
-import watchEdge from "./utils/watch";
 
 const server = new Hono();
 const { app, websocket } = ws;
@@ -50,6 +52,10 @@ server.get("*", async (c) => {
       },
       header: c.req.header,
       setHeader: c.header,
+      lib: {
+        client,
+        moment,
+      },
     });
 
     return c.body(body);
