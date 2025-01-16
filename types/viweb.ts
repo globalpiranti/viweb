@@ -1,7 +1,6 @@
 import type { AxiosInstance } from "axios";
 import type { RequestHeader } from "hono/utils/headers";
 import type { StatusCode } from "hono/utils/http-status";
-import type moment from "moment";
 
 export type ViwebConfig = {
   routes: Route[];
@@ -25,6 +24,5 @@ export type Context = {
   render: (path: string, data?: Record<string, any>) => Promise<string>;
   lib: {
     client: AxiosInstance;
-    moment: typeof moment;
   };
 };

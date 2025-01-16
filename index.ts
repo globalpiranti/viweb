@@ -1,6 +1,5 @@
 import { Hono } from "hono";
 import { serveStatic } from "hono/bun";
-import moment from "moment";
 import client from "./utils/client";
 import edge from "./utils/edge";
 import router from "./utils/router";
@@ -54,7 +53,6 @@ server.get("*", async (c) => {
       setHeader: c.header,
       lib: {
         client,
-        moment,
       },
     });
 
