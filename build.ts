@@ -3,6 +3,7 @@ import { rmSync, cpSync } from "node:fs";
 import { resolve, join } from "node:path";
 import * as esbuild from "esbuild";
 import fg from "fast-glob";
+import inject from "./utils/inject";
 
 const distPath = resolve("dist");
 const sourcePath = resolve();
@@ -20,13 +21,32 @@ const removeDist = async () => {
 const buildConfig = async () => {
   const loader = ora("Bundling config file...").start();
 
+  try {
+    const injection = inject(
+      await esbuild
+        .build({
+          entryPoints: [join(sourcePath, "viweb.config.ts")],
+          platform: "browser",
+          format: "cjs",
+          bundle: true,
+          write: false,
+          external: ["axios"],
+        })
+        .then((result) => result.outputFiles![0].text),
+    )();
+    injection.cleanup();
+  } catch (e) {
+    loader.fail("Viweb configuration invalid");
+    throw e;
+  }
+
   await esbuild.build({
     entryPoints: [join(sourcePath, "viweb.config.ts")],
     platform: "browser",
     format: "cjs",
     bundle: true,
     outfile: join(distPath, "config.js"),
-    external: ["axios", "moment"],
+    external: ["axios"],
   });
 
   loader.succeed("Bundle config done");
